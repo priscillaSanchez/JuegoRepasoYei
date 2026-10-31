@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aventura del Saber</title>
+<style>
+:root{--bg:#fff0f7;--card:#fff;--ink:#4a2a55;--soft:#8a6a95;--ok:#34d399;--no:#fb7185;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a1733;--card:#3d2350;--ink:#fde7f5;--soft:#d1a8dc}}
+:root[data-theme="dark"]{--bg:#2a1733;--card:#3d2350;--ink:#fde7f5;--soft:#d1a8dc}
+html,body{margin:0;min-height:100%}
+body{font-family:"Nunito","Segoe UI",system-ui,sans-serif;background:linear-gradient(160deg,var(--bg),#e9d5ff 140%);color:var(--ink);background-color:var(--bg)}
+main{max-width:640px;margin:0 auto;padding:18px;text-align:center}
+h1{font-size:2rem;margin:.2em 0}
+.sub{color:var(--soft);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sj{border:0;border-radius:22px;padding:22px 8px;color:#fff;font:700 1.05rem inherit;font-family:inherit;cursor:pointer;box-shadow:0 8px 0 rgba(0,0,0,.15);transition:transform .15s}
+.sj:hover{transform:translateY(-4px) rotate(-1deg)}.sj span{display:block;font-size:2.6rem}
+.card{background:var(--card);border-radius:26px;padding:24px 18px;box-shadow:0 10px 30px rgba(190,80,160,.2);margin:14px 0;animation:pop .35s}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.q{font-size:1.3rem;font-weight:800;line-height:1.35}
+.a{margin-top:14px;padding:12px;border-radius:16px;background:#fdf2f8;color:#831843;font-size:1.2rem;font-weight:800}
+.btn{border:0;border-radius:999px;padding:13px 22px;margin:8px 5px 0;font:800 1rem inherit;font-family:inherit;color:#fff;cursor:pointer;background:#c026d3;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.btn:active{transform:translateY(3px);box-shadow:none}.ok{background:var(--ok)}.no{background:var(--no)}.ghost{background:#a78bfa}
+.bar{height:16px;background:rgba(255,255,255,.6);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f472b6,#a78bfa);transition:width .4s}
+.top{display:flex;justify-content:space-between;font-weight:800}
+.mascot{font-size:3rem;animation:bob 2s infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.msg{min-height:1.5em;font-weight:800;color:var(--soft)}
+.fall{position:fixed;top:-40px;font-size:1.8rem;animation:fall 3s linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.hide{display:none}
+.in{width:100%;box-sizing:border-box;margin-top:14px;padding:12px;border:3px dashed #f9a8d4;border-radius:16px;font:inherit;font-family:inherit;font-size:1.05rem;background:var(--card);color:var(--ink);resize:none}
+.learn{border:4px solid #f472b6}.big{font-size:1.5rem;font-weight:900;color:#be185d;background:#fdf2f8;border-radius:16px;padding:14px;margin:14px 0}
+</style></head><body><main id="app"></main>
+<script>
+const S={
+mate:{n:"Matemáticas",e:"🔢",c:"#ec4899",q:[
+["Escribí con números y signos: el producto de 9 y 6.","9 × 6"],
+["Representá: el triple de un número a, menos 4.","3a - 4"],
+["Completá: 8 × □ = 96.","12"],
+["Regla «multiplicar por 4», entradas 2, 5 y 7. ¿Cuáles son las salidas?","8, 20 y 28"],
+["Nombrá la propiedad: 12 + 7 = 7 + 12.","Conmutativa de la suma"],
+["Aplicá la distributiva y calculá: 8 × (20 + 5).","8×20 + 8×5 = 200"],
+["Hallá la moda de 3, 5, 5, 7 y 9.","5"],
+["Calculá la media de 6, 8, 10 y 12.","9"],
+["Hallá el recorrido de 12, 18, 9, 15 y 20.","20 - 9 = 11"],
+["Hay 24 cajas con 18 lápices cada una. ¿Cuántos lápices hay?","432 lápices"],
+["Se reparten 936 cuadernos entre 12 grupos. ¿Cuántos recibe cada uno?","78 cuadernos"],
+["Se transportan 156 estudiantes en buses de 40 asientos. ¿Cuántos buses como mínimo?","4 buses"],
+["Calculá 12,45 + 7,8.","20,25"],
+["Calculá 2,4 × 1,5.","3,6"],
+["Calculá 4,57 × 10.","45,7"],
+["Calculá 12,034 × 1000.","12 034"]]},
+soc:{n:"Estudios Sociales",e:"🗺️",c:"#8b5cf6",q:[
+["¿Cuántas regiones socioeconómicas de planificación tiene Costa Rica?","Seis"],
+["Escribí los nombres de las seis regiones.","Central, Chorotega, Pacífico Central, Brunca, Huetar Norte y Huetar Caribe (Atlántica)"],
+["¿Qué nombre actual recibe la región Huetar Atlántica?","Huetar Caribe"],
+["¿Dónde se ubica la región Chorotega?","En el noroeste, principalmente Guanacaste"],
+["¿Qué significan las siglas MEP?","Ministerio de Educación Pública"],
+["¿Qué significan las siglas PANI?","Patronato Nacional de la Infancia"],
+["¿Qué significa EBAIS?","Equipo Básico de Atención Integral en Salud"],
+["¿A qué institución pertenecen los EBAIS?","A la CCSS"],
+["¿Función principal de la Defensoría de los Habitantes?","Proteger los derechos de las personas ante actuaciones del sector público"],
+["Una persona menor de edad sufre maltrato. ¿Qué institución interviene?","El PANI"],
+["Una familia en pobreza necesita apoyo. ¿Qué institución valora su situación?","El IMAS"],
+["¿Qué finalidad educativa tiene Avancemos?","Apoyar la permanencia o reincorporación al sistema educativo"],
+["¿A qué región pertenecen Liberia y Nicoya?","Chorotega"],
+["¿A qué región pertenecen Golfito y Corredores?","Brunca"],
+["¿A qué región pertenecen San Carlos y Los Chiles?","Huetar Norte"],
+["¿Son lo mismo una provincia y una región socioeconómica?","No. Tienen propósitos distintos; una región puede agrupar territorios de varias provincias"]]},
+cie:{n:"Ciencias",e:"🔬",c:"#06b6d4",q:[
+["¿Qué es la trayectoria?","El camino que sigue un cuerpo durante su movimiento"],
+["¿Qué es el desplazamiento?","El cambio de posición del punto inicial al final; tiene dirección y sentido"],
+["¿Qué es la rapidez media?","Distancia total recorrida ÷ tiempo total empleado"],
+["Un objeto recorre 60 m en 12 s. ¿Cuál es su rapidez media?","5 m/s"],
+["Un carrito mantiene 3 m/s durante 7 s. ¿Qué distancia recorre?","21 m"],
+["Un objeto recorre 45 m a 5 m/s. ¿Cuánto tarda?","9 s"],
+["¿Qué es el calor en ciencias?","Energía que se transfiere entre cuerpos por una diferencia de temperatura"],
+["¿En qué dirección se transfiere el calor?","De mayor a menor temperatura"],
+["¿Qué es la conducción del calor?","Transferencia de energía térmica por contacto, sin transporte global de materia"],
+["¿Qué es la convección del calor?","Transferencia de energía por el movimiento de un líquido o un gas"],
+["¿Qué es la radiación térmica?","Transferencia de energía por ondas electromagnéticas; no necesita medio material"],
+["¿Qué es un aislante térmico?","Un material que dificulta la transferencia de calor"],
+["¿Qué instrumento mide la temperatura?","El termómetro"],
+["¿Qué instrumento mide la masa?","La balanza"],
+["¿Qué agente causa una quemadura solar?","La radiación ultravioleta del Sol"],
+["¿Qué capa afecta una quemadura de primer grado?","La epidermis, la capa externa de la piel"]]},
+esp:{n:"Español",e:"📚",c:"#f59e0b",q:[
+["¿Qué es el tema de un relato?","La idea central o asunto principal que desarrolla"],
+["¿Qué es el protagonista?","El personaje principal, en torno al cual se desarrolla la acción"],
+["¿Qué es el narrador?","La voz que cuenta la historia"],
+["¿Qué es la trama?","La organización y relación de los acontecimientos"],
+["¿Cuál es la finalidad de un texto expositivo?","Explicar o presentar información sobre un tema con claridad"],
+["¿Cuál es la finalidad de un texto descriptivo?","Mostrar cómo es una persona, lugar u objeto mediante sus características"],
+["¿Cuál es la finalidad de un texto narrativo?","Contar acontecimientos que les ocurren a personajes en un tiempo y espacio"],
+["Clasificá: «La mochila es azul, grande y tiene dos bolsillos».","Texto descriptivo"],
+["Clasificá: «La evaporación es el paso del agua líquida al estado gaseoso».","Texto expositivo"],
+["¿Qué es una leyenda?","Relato de una comunidad que mezcla elementos reales con sucesos extraordinarios"],
+["¿Qué es una adivinanza?","Un juego verbal con pistas para descubrir una respuesta"],
+["Resolvé: «Tengo agujas y no sé coser; tengo números y no sé leer».","Un reloj"],
+["¿Qué es un trabalenguas?","Texto con sonidos difíciles de pronunciar, para jugar y practicar la expresión oral"],
+["¿Qué es un refrán?","Expresión popular breve que transmite una enseñanza o consejo"],
+["En «Camila tiene un corazón de oro», ¿el lenguaje es literal o figurado?","Figurado: significa que es bondadosa"],
+["¿Qué significa «dar una mano»?","Ayudar o colaborar"]]}};
+const $=s=>document.querySelector(s),app=$("#app");
+let K,Q,T,done,stars,fails,seen,W="";
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const NW=Object.assign(Object.create(null),{uno:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10}),SW=new Set("para como entre sobre desde pero tiene sino cada esta este donde mediante puede texto cuando porque".split(" "));
+const nz=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\b[a-z]+\b/g,w=>NW[w]||w).replace(/(\d)\s(?=\d{3}\b)/g,"$1");
+const nums=s=>(s.match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>x.replace(",","."));
+let M=[];
+function lev(a,b){const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]==b[j-1]?0:1));p=t}}return m[b.length]}
+function chk(a,u){M=[];
+a=nz(a);u=nz(u);
+if(a.includes("="))a=a.split("=").pop();
+const na=nums(a),nu=new Set([...nums(u),...(u.match(/\d+/g)||[])]);
+if(na.length)return na.every(n=>nu.has(n));
+const ws=[...new Set(a.match(/[a-z]{4,}/g)||[])].filter(w=>!SW.has(w));
+if(!ws.length)return false;
+const uw=u.match(/[a-z]{3,}/g)||[];
+M=ws.filter(w=>u.includes(w.slice(0,5))||uw.some(x=>lev(x,w)<=(w.length<5?0:w.length<8?1:2)));
+return M.length>=Math.min(Math.ceil(ws.length/3),3)}
+function menu(){app.innerHTML=`<div class="mascot">🦖</div><h1>🦕 Aventura del Saber 🦖</h1><p class="sub">Elegí una materia. ¡Las preguntas que falles volverán a aparecer hasta que las domines!</p><div class="grid">${Object.keys(S).map(k=>`<button class="sj" style="background:${S[k].c}" onclick="start('${k}')"><span>${S[k].e}</span>${S[k].n}</button>`).join("")}</div>`}
+function start(k){K=k;Q=shuf(S[k].q.map((_,i)=>i));T=Q.length;done=0;stars=0;fails=0;seen=new Set();show()}
+function show(){
+if(!Q.length)return end();
+const i=Q[0],s=S[K];
+app.innerHTML=`<div class="top"><span>${s.e} ${s.n}</span><span>⭐ ${stars} &nbsp; 💗 ${fails}</span></div>
+<div class="bar"><i style="width:${done/T*100}%"></i></div>
+<div class="card">${seen.has(i)?'<div class="msg">🔁 Repaso: ¡esta ya la viste! Intentá recordarla</div>':''}<div class="q">${s.q[i][0]}</div><textarea id="me" class="in" rows="2" placeholder="Escribí tu respuesta aquí ✏️"></textarea>
+<div id="ans" class="a hide">✅ Respuesta correcta: ${s.q[i][1]}</div>
+<button id="rv" class="btn" onclick="rev()">Responder ✅</button>
+<div id="jd" class="hide"><button class="btn ok" onclick="mark(1)">Siguiente ➡️</button></div></div>
+<p class="msg" id="m">Escribí tu respuesta y tocá Responder 🤔</p>
+<button class="btn ghost" onclick="menu()">🏠 Menú</button>`}
+function rev(){const t=$("#me");if(!t.value.trim()){$("#m").textContent="Escribí tu respuesta primero ✏️";t.focus();return}t.disabled=true;const i=Q[0];if(!chk(S[K].q[i][1],t.value)){W=t.value;mark(0);return}$("#ans").classList.remove("hide");$("#ans").textContent="🎉 ¡Correcto! "+S[K].q[i][1];$("#rv").classList.add("hide");$("#jd").classList.remove("hide");$("#m").textContent=""}
+function mark(ok){
+const i=Q.shift();
+if(ok){done++;if(!seen.has(i))stars++;confetti(6);show();$("#m").textContent="¡Excelente! 🎉";return}
+seen.add(i);fails++;Q.splice(Math.min(3,Q.length),0,i);
+const s=S[K];
+app.innerHTML=`<div class="top"><span>${s.e} ${s.n}</span><span>⭐ ${stars} &nbsp; 💗 ${fails}</span></div><div class="bar"><i style="width:${done/T*100}%"></i></div><div class="card learn"><div class="mascot">💡</div><p class="msg" style="color:#e11d48">Incorrecto ❌</p><p class="sub">Tu respuesta: ${W.replace(/</g,"&lt;")}</p>${M.length?`<p class="sub">✨ Ibas por buen camino, acertaste: <b>${M.join(", ")}</b></p>`:""}<p class="msg">La respuesta correcta es:</p><div class="q">${s.q[i][0]}</div><div class="big">${s.q[i][1]}</div><p class="sub">Leela en voz alta 🗣️ y memorizala. Dentro de poco te la voy a preguntar otra vez, ¡sin ayuda!</p><button class="btn ok" onclick="show()">¡Ya la memoricé! 💪</button></div>`;
+}
+function confetti(n){for(let j=0;j<n;j++){const e=document.createElement("div");e.className="fall";e.textContent=["🦖","🦕","⭐","🌿","🥚"][j%5];e.style.left=Math.random()*95+"vw";e.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(e);setTimeout(()=>e.remove(),4000)}}
+function end(){confetti(40);app.innerHTML=`<div class="mascot">🏆</div><h1>¡Lo lograste!</h1><div class="card"><p class="q">Dominaste las ${T} preguntas de ${S[K].n} 🎊</p><p class="sub">Estrellas ganadas: ⭐ ${stars}<br>Preguntas que repasaste: 💗 ${seen.size}</p><button class="btn" onclick="start('${K}')">Jugar otra vez 🔁</button><button class="btn ghost" onclick="menu()">Otra materia 🏠</button></div>`}
+menu();
+</script></body></html>
